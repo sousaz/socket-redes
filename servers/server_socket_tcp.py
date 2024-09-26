@@ -2,6 +2,8 @@ import socket
 import os
 import sys
 import threading
+import random
+from time import sleep
 
 HOST = "127.0.0.1"
 PORT = 8080
@@ -19,6 +21,8 @@ def build_response(status_code, content_type, content):
     return f"{response_line}{headers}\r\n{content}"
 
 def handle_client(conn, addr):
+    # time = random.choice([3, 9])
+    # sleep(time)
     with conn:
         try:
             # print(f"Connected by {addr}")
@@ -45,7 +49,7 @@ def handle_client(conn, addr):
             conn.sendall(res.encode('utf-8'))
         finally:
             conn.close()
-            # print("Connection closed")
+            print("Connection closed")
             sys.exit(0)
     
 def start_server():
