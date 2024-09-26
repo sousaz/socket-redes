@@ -14,7 +14,11 @@ def http_client(host, port, path):
                 break
             res += data
 
-        print(res.decode('utf-8'))
+        res = res.decode('utf-8').split("\r\n\r\n")[1]
+
+        with open('response.html', 'w', encoding='utf-8') as f:
+            f.write(res)
+        print(res)
 
 if len(sys.argv) != 4:
     print(f"Usage: {sys.argv[0]} <host> <port> <path>")
@@ -24,5 +28,5 @@ host = sys.argv[1]
 port = int(sys.argv[2])
 path = sys.argv[3]
 
-for i in range(4):
-    http_client(host, port, path)
+# for i in range(4):
+http_client(host, port, path)
