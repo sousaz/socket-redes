@@ -15,7 +15,7 @@ def read_html_file(filepath):
 
 def build_response(status_code, content_type, content):
     response_line = f"HTTP/1.1 {status_code}\r\n"
-    headers = f"Content-Type: {content_type}\r\nContenmt-Length: {len(content)}\r\n"
+    headers = f"Content-Type: {content_type}\r\nContent-Length: {len(content)}\r\n"
     return f"{response_line}{headers}\r\n{content}"
 
 def handle_client(conn, addr):
