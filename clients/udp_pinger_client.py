@@ -15,10 +15,11 @@ def udp_client(host, port, message, timeout=1, n=10):
         for i in range(n):
             try:
                 start = time.time()
+                message = f"{message},{i},{start}"
                 s.sendto(message.encode('utf-8'), (host, port))
                 data, _ = s.recvfrom(1024)
                 end = time.time()
-                print(f"mensagem: {data.decode('utf-8')}, tempo: {((end - start) * 1000):.2f}ms")
+                print(f"mensagem: {data.decode('utf-8').split(',')[0]}, tempo: {((end - start) * 1000):.2f}ms")
                 stats.append(end - start)
             except socket.timeout:
                 print('Timeout')
@@ -30,4 +31,4 @@ def udp_client(host, port, message, timeout=1, n=10):
         print(f"Tempo medio: {avg * 1000:.2f}ms")
         print(f"Timeouts: {timeouts}, {timeouts / n * 100:.0f}%")
 
-udp_client('localhost', 12000, 'ping', 1, 40)
+udp_client('localhost', 12000, 'ping', 1, 10)
