@@ -6,6 +6,9 @@ import time
 import select
 import binascii
 
+errors = {0: "0 - Rede de Destino Inalcançável",
+          1: "1 - Host de Destino Inalcançável"},
+
 ICMP_ECHO_REQUEST = 8
 
 def checksum(str):
@@ -52,6 +55,9 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
     #Fetch the ICMP header from the IP packet
     icmpHeader = recPacket[20:28]
     type, code, checksum, receivedID, sequence = struct.unpack("bbHHh", icmpHeader)
+
+    if type == 3:
+      return errors[code]
 
     #receivedID must equal process ID
     if receivedID == ID:
