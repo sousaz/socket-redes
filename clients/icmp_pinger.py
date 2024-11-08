@@ -9,6 +9,16 @@ import binascii
 errors = {0: "0 - Rede de Destino Inalcançável",
           1: "1 - Host de Destino Inalcançável"},
 
+def rtts(rtt):
+  avg = sum(rtt) / len(rtt)
+  max_rtt = max(rtt)
+  min_rtt = min(rtt)
+  return avg, max_rtt, min_rtt
+
+stats = []
+countTimeouts = 0
+countPings = 0
+
 ICMP_ECHO_REQUEST = 8
 
 def checksum(str):
@@ -38,7 +48,8 @@ def checksum(str):
 
 
 def receiveOnePing(mySocket, ID, timeout, destAddr):
-
+  global stats
+  global countTimeouts
   timeLeft = timeout
 
   while 1:
@@ -46,13 +57,12 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
     whatReady = select.select([mySocket], [], [], timeLeft)
     howLongInSelect = (time.time() - startedSelect)
     if whatReady[0] == []: # Timeout
+      countTimeouts += 1
       return "Request timed out."
 
     timeReceived = time.time()
     recPacket, addr = mySocket.recvfrom(1024)
 
-    #Fill in start
-    #Fetch the ICMP header from the IP packet
     icmpHeader = recPacket[20:28]
     type, code, checksum, receivedID, sequence = struct.unpack("bbHHh", icmpHeader)
 
@@ -64,15 +74,14 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
       numOfBytes = struct.calcsize("d")
       timeSent = struct.unpack("d", recPacket[28:28 + numOfBytes])[0]
       rtt = (timeReceived - timeSent)*1000
-      
-    
+      stats.append(rtt)
+
       print ("Reply from:",destAddr, "Time:",rtt, "ms")
       return ""
- 
-    # Fill in end
 
     timeLeft = timeLeft - howLongInSelect
     if timeLeft <= 0:
+      countTimeouts += 1
       return "Request timed out."
 
 
@@ -125,6 +134,7 @@ def doOnePing(destAddr, timeout):
 def ping(host, timeout=1):
   #timeout=1 means: If one second goes by without a reply from the server,
   #the client assumes that either the client's ping or the server's pong is lost
+  global countPings
 
   dest = socket.gethostbyname(host)
   print ("Pinging " + dest + " using Python:")
@@ -133,7 +143,8 @@ def ping(host, timeout=1):
   # Send ping requests to a server separated by approximately one second.
   # I will be sending a single ping message to each server.
   #while 1:
-  delay = doOnePing(dest, timeout) 
+  delay = doOnePing(dest, timeout)
+  countPings += 1
   print (delay)
   time.sleep(1)# one second
 
@@ -154,3 +165,10 @@ ping("www.google.com.sg")
 
 print ("Google Australia")
 ping("www.google.com.au")
+
+print("--------------------------------Resultados--------------------------------")
+avg, max_rtt, min_rtt = rtts(stats)
+print(f"Maior tempo: {max_rtt:.2f}ms")
+print(f"Menor tempo: {min_rtt:.2f}ms")
+print(f"Tempo medio: {avg:.2f}ms")
+print(f"Timeouts: {countTimeouts}, {countTimeouts / countPings * 100:.0f}%")
