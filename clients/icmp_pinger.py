@@ -7,7 +7,7 @@ import select
 import binascii
 
 errors = {0: "0 - Rede de Destino Inalcançável",
-          1: "1 - Host de Destino Inalcançável"},
+          1: "1 - Host de Destino Inalcançável"}
 
 def rtts(rtt):
   avg = sum(rtt) / len(rtt)
@@ -21,20 +21,20 @@ countPings = 0
 
 ICMP_ECHO_REQUEST = 8
 
-def checksum(str):
+def checksum(data):
 
   csum = 0
-  countTo = (len(str) / 2) * 2
+  countTo = (len(data) / 2) * 2
 
   count = 0
   while count < countTo:
-    thisVal = (str[count+1]) * 256 + (str[count])
+    thisVal = (data[count+1]) * 256 + (data[count])
     csum = csum + thisVal
     csum = csum & 0xffffffff #
     count = count + 2
 
-  if countTo < len(str):
-    csum = csum + ord(str[len(str) - 1])
+  if countTo < len(data):
+    csum = csum + ord(data[len(data) - 1])
     csum = csum & 0xffffffff #
 
   csum = (csum >> 16) + (csum & 0xffff)
@@ -142,14 +142,17 @@ def ping(host, timeout=1):
 
   # Send ping requests to a server separated by approximately one second.
   # I will be sending a single ping message to each server.
-  #while 1:
-  delay = doOnePing(dest, timeout)
-  countPings += 1
-  print (delay)
-  time.sleep(1)# one second
+  for i in range(0, 4):
+    delay = doOnePing(dest, timeout)
+    countPings += 1
+    print (delay)
+    time.sleep(1)# one second
 
   return delay
 
+
+print("bbc.co.uk")
+ping("bbc.co.uk")
 
 print("127.0.0.1 Localhost")
 ping("127.0.0.1")
