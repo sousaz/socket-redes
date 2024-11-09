@@ -1,0 +1,15 @@
+print("BR")
+ping("186.192.252.1") 
+ping("nic.br") 
+
+print("Ásia - onde nao sei")
+ping("4.2.2.2") # Ásia
+
+print("Oceania")
+ping("202.158.214.106")
+
+print("África")
+ping("196.25.1.1")
+
+print("Alemanha")
+ping("84.200.69.80")
