@@ -43,20 +43,29 @@ try:
                     outputdata = f.readlines()
                     print("Lido do cache.")
                     
-                    # Envia resposta do cache
-                    tcpCliSock.send("HTTP/1.1 200 OK\r\n".encode())
-                    tcpCliSock.send(f"Content-Type:{get_content_type(filename)}\r\n\r\n".encode())
-                    for line in outputdata:
-                        tcpCliSock.send(line)
+                    # Verifica se o conteúdo cacheado contém um redirecionamento
+                    if b"HTTP/1.1 301" in outputdata[0] or b"HTTP/1.1 302" in outputdata[0]:
+                        # Extrai o cabeçalho de localização para redirecionamento
+                        for line in outputdata:
+                            if line.startswith(b"Location:"):
+                                location = line.decode().split(": ", 1)[1].strip()
+                                tcpCliSock.send("HTTP/1.1 301 Moved Permanently\r\n".encode())
+                                tcpCliSock.send(f"Location: {location}\r\n\r\n".encode())
+                                print(f"Redirecionando para {location}")
+                                break
+                    else:
+                        # Envia a resposta do cache para o cliente
+                        tcpCliSock.send("HTTP/1.1 200 OK\r\n".encode())
+                        for line in outputdata:
+                            tcpCliSock.send(line)
             except IOError:
                 # Conecta ao servidor remoto para buscar o arquivo
-                # Aqui a URL é tratada como domínio
                 hostn = filename.replace("www.", "", 1)
                 print("Servidor remoto:", hostn)
                 
                 try:
                     c = socket(AF_INET, SOCK_STREAM)
-                    c.connect((hostn, 80))  # Conecta ao servidor remoto via HTTP na porta 80
+                    c.connect((hostn, 80))
                     
                     # Envia a requisição HTTP para o servidor remoto
                     c.sendall(f"GET / HTTP/1.1\r\nHost: {hostn}\r\nConnection: close\r\n\r\n".encode('utf-8'))
