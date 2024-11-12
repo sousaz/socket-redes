@@ -8,7 +8,7 @@ import binascii
 
 ICMP_ECHO_REQUEST = 8
 MAX_HOPS = 30
-TIMEOUT = 2.0
+TIMEOUT = 10
 TRIES = 2
 
 def checksum(data):
@@ -180,4 +180,7 @@ def get_route(hostname):
     return tracelist2
 
 print(get_route("www.google.com"))
-# print(get_route("www.amazon.com"))
+# print(get_route("bbc.co.uk"))
+# print(get_route("4.2.2.2"))
+# print(get_route("202.158.214.106"))
+# print(get_route("196.25.1.1"))
