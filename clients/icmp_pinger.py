@@ -101,7 +101,7 @@ def sendOnePing(mySocket, destAddr, ID):
   if sys.platform == 'darwin':
     myChecksum = socket.htons(myChecksum) & 0xffff   #Convert 16-bit integers from host to network byte order.
   else:
-    myChecksum = socket.htons(myChecksum)
+    myChecksum = socket.htons(myChecksum) # Transforma em bytes para que possa ser lido pelo sistema
 
   #print ("ICMP Header: ", ICMP_ECHO_REQUEST,0,myChecksum,ID,1)
   header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
@@ -120,7 +120,7 @@ def doOnePing(destAddr, timeout):
 
   # Fill in start
   # Create socket here.
-  mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
+  mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp) # Sock_raw é um pacote cru pacotes não processados pelo SO diretamente
 
   # Fill in end
   myID = os.getpid() & 0xFFFF  #Return the current process i

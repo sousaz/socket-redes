@@ -94,6 +94,7 @@ def get_route(hostname):
             mySocket = socket(AF_INET, SOCK_RAW, icmp)
             # Fill in end
 
+            # Define o valor do TTL para o pacote.
             mySocket.setsockopt(IPPROTO_IP, IP_TTL, struct.pack('I', ttl))
             mySocket.settimeout(TIMEOUT)
             try:
