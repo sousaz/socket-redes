@@ -151,23 +151,24 @@ def ping(host, timeout=1):
   return delay
 
 
+
+print("Localhost")
+ping("127.0.0.1")
+
 print("bbc.co.uk")
 ping("bbc.co.uk")
 
-print("127.0.0.1 Localhost")
-ping("127.0.0.1")
+print("Ásia")
+ping("4.2.2.2")
 
-print("Google")
-ping("www.google.com")
+print("Oceania")
+ping("202.158.214.106")
 
-print ("Google Mexico")
-ping("www.google.com.mx")
+print("África")
+ping("196.25.1.1")
 
-print ("Google Asia")
-ping("www.google.com.sg")
-
-print ("Google Australia")
-ping("www.google.com.au")
+print("Alemanha")
+ping("84.200.69.80")
 
 print("--------------------------------Resultados--------------------------------")
 avg, max_rtt, min_rtt = rtts(stats)
